@@ -21,6 +21,15 @@ let rec eval (st : State.storage) (code : ast) : value * State.storage =
       List.fold_left
         (fun (_, betw_exp_st) el -> eval betw_exp_st el)
         (Nil, st) lst
-(* | _ -> failwith ("Unknown ast node") *)
+  | WhileLoop (cond, body) ->
+      let rec iteration s =
+        let c_v, n_st = eval s cond in
+        match c_v with
+        | Bool v when v -> 
+            let _, n_st = eval n_st body in iteration n_st
+        | Bool v when not v -> n_st
+        | _ -> typefail "While loop expected bool as condition"
+    in
+    Nil, iteration st
 
 let run (code : ast) = fst (eval (State.create ()) code)

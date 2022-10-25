@@ -32,6 +32,12 @@ let seq_of_expr =
               identifier_t >>= fun i ->
               token "=" *> expr >>| fun var_val -> VarAssign (i, var_val)
             in
+            (* --- While --- *)
+            let while_loop =
+              token "while" *> expr >>= fun cond ->
+              maybe (token "do") *> seq_of_expr <* token "end" >>= fun body ->
+              return (WhileLoop (cond, body))
+            in
             (* --- Conditional ---*)
             let conditional =
               token "if" *> maybe new_lines *> expr
@@ -54,9 +60,10 @@ let seq_of_expr =
             let asoc1_p = chainl1 asoc0_p asoc1 in
             let asoc2_p = chainl1 asoc1_p asoc2 in
             (* --- Expr definition --- *)
-            assn <|> asoc2_p <|> parens expr)
+            assn <|> asoc2_p <|> parens expr <|> while_loop)
       in
-      sep_by expr_separator expr >>| fun s -> Seq s)
+      maybe new_lines *> sep_by expr_separator expr <* maybe new_lines
+      >>| fun s -> Seq s)
 
 let build (str : string) : ast =
   match parse_string ~consume:All seq_of_expr str with

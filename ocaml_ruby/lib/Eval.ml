@@ -7,7 +7,7 @@ let%test "minus" = test_eval "1 - 1" "0"
 let%test "multiply" = test_eval "4 * 4" "16"
 let%test "division" = test_eval "42 / 6" "7"
 let%test "binop ws around" = test_eval " 1 + 1 " "2"
-(* let%test "binop new lines around" = test_eval "\n1+1\n" "2" *)
+let%test "binop new lines around" = test_eval "\n1+1\n" "2"
 let%test "multiple binops" = test_eval "1 + 2 * 3" "7"
 let%test "binops with brackets" = test_eval "(1 + 4) * (2 + 3) / 5" "5"
 let%test "bool and" = test_eval "true && false" "false"
@@ -37,6 +37,7 @@ let%test "sum of conditionals" =
 
 let%test "condition with gr and nl" = test_eval "if 3 > 2 then 6 end" "6"
 let%test "variable assign" = test_eval "u = 2 + 2" "4"
+let%test "variable assign itself" = test_eval "x = 10; x = x + 1; x" "11"
 let%test "variable assign and call" = test_eval "x = 10; 2 + 2; x" "10"
 let%test "multiple variables and call" = test_eval "x = 10; y = 7; x + y" "17"
 let%test "bool variables" = test_eval "x = true; y = false; x && y" "false"
@@ -46,3 +47,6 @@ let%test "string variables" =
 
 let%test "variable from condition" =
   test_eval "x = false; y = if x then 13 else 10 end; y" "10"
+
+let%test "while loop" = test_eval "while false do 10 end" "nil"
+let%test "while loop with variables" = test_eval "x = 0; while x < 10 do \n x = x + 1 \n end; x" "10"

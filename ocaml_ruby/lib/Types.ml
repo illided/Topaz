@@ -11,6 +11,7 @@ type ast =
   | Var of string
   | VarAssign of string * ast
   | Conditional of ast * ast * ast
+  | WhileLoop of ast * ast
   | Binop of (value -> value -> value) * ast * ast
   | Seq of ast list
 
