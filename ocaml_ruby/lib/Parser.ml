@@ -54,13 +54,20 @@ let seq_of_expr =
                         return (Conditional (condition, thenB, elseB)) ))
               <* token "end"
             in
+            (* --- Array declaration --- *)
+            let array_v =
+              token "[" *> sep_by (token ",") expr <* token "]" >>| fun arr ->
+              ArrayDecl arr
+            in
             (* --- Binops ---*)
-            let factor = parens expr <|> literal <|> var_cal <|> conditional in
+            let factor =
+              parens expr <|> literal <|> var_cal <|> conditional <|> array_v
+            in
             let asoc0_p = chainl1 factor asoc0 in
             let asoc1_p = chainl1 asoc0_p asoc1 in
             let asoc2_p = chainl1 asoc1_p asoc2 in
             (* --- Expr definition --- *)
-            assn <|> asoc2_p <|> parens expr <|> while_loop)
+            assn <|> asoc2_p <|> parens expr <|> while_loop <|> array_v)
       in
       maybe new_lines *> sep_by expr_separator expr <* maybe new_lines
       >>| fun s -> Seq s)

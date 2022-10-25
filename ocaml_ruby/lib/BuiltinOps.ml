@@ -9,6 +9,7 @@ let plus x y =
   match (x, y) with
   | Integer x, Integer y -> Integer (x + y)
   | String x, String y -> String (String.cat x y)
+  | Array x, Array y -> Array (x @ y)
   | _ -> binop_typefail "+" x y
 
 let minus x y =
@@ -19,7 +20,8 @@ let minus x y =
 let multiply x y =
   match (x, y) with
   | Integer x, Integer y -> Integer (x * y)
-  | String x, Integer y -> String (String.concat "" (List.init y (fun _ -> x)))
+  | String x, Integer y -> String (List.init y (fun _ -> x) |> String.concat "")
+  | Array x, Integer y -> Array (List.init y (fun _ -> x) |> List.concat)
   | _ -> binop_typefail "*" x y
 
 let divide x y =
@@ -32,6 +34,7 @@ let raw_eq x y =
   | Integer x, Integer y -> Some (x = y)
   | Bool x, Bool y -> Some (x = y)
   | String x, String y -> Some (String.equal x y)
+  | Array x, Array y -> Some (x = y)
   | Nil, Nil -> Some true
   | _ -> None
 

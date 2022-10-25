@@ -49,4 +49,22 @@ let%test "variable from condition" =
   test_eval "x = false; y = if x then 13 else 10 end; y" "10"
 
 let%test "while loop" = test_eval "while false do 10 end" "nil"
-let%test "while loop with variables" = test_eval "x = 0; while x < 10 do \n x = x + 1 \n end; x" "10"
+
+let%test "while loop with variables" =
+  test_eval "x = 0; while x < 10 do \n x = x + 1 \n end; x" "10"
+
+let%test "empty array" = test_eval "[]" "[]"
+let%test "int array declaration" = test_eval "[1, 2, 3]" "[1, 2, 3]"
+let%test "bool array declaration" = test_eval "[false, true]" "[false, true]"
+
+let%test "mixed array declaration" =
+  test_eval "[1 + 1, false || true]" "[2, true]"
+
+let%test "array sum" = test_eval "[1, 2] + [3, 4]" "[1, 2, 3, 4]"
+let%test "array times int" = test_eval "[1, 2] * 3" "[1, 2, 1, 2, 1, 2]"
+
+let%test "array equality" =
+  test_eval "[1, true, \"hello\"] == [1, true, \"hello\"]" "true"
+
+let%test "variable assign to array" = test_eval "x = [1, 2]; x" "[1, 2]"
+let%test "using variables inside array" = test_eval "x = 10; y = [1, 2, x]; y" "[1, 2, 10]"
