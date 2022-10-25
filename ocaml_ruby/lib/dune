@@ -1,0 +1,8 @@
+(library
+ (wrapped false)
+ (modules Types BuiltinOps Lexer Parser Interpreter Eval Environment Debug)
+ (name ocaml_ruby)
+ (libraries angstrom)
+ (inline_tests)
+ (preprocess
+  (pps ppx_inline_test)))
