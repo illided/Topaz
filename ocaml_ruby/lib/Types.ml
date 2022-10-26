@@ -21,5 +21,6 @@ type ast =
   | WhileLoop of ast * ast
   | Binop of (value -> value -> value) * ast * ast
   | Seq of ast list
+  | Indexing of ast * ast
 
 let typefail msg = failwith ("TypeError: " ^ msg)

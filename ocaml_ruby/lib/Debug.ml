@@ -47,5 +47,9 @@ let tree_to_json (max_n : int) (t : ast) =
             List.map (fun el -> helper el (i + 1)) lst |> list_to_json
           in
           wrap_with_name "ArrayDecl" lst_as_json
+      | Indexing (box, ind) ->
+          pairs_to_json
+            [ ("Box", helper box (i + 1)); ("Index", helper ind (i + 1)) ]
+          |> wrap_with_name "Indexing"
   in
   helper t 0

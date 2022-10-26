@@ -55,9 +55,13 @@ let seq_of_expr =
               <* token "end"
             in
             (* --- Array declaration --- *)
-            let array_v =
-              token "[" *> sep_by (token ",") expr <* token "]" >>| fun arr ->
-              ArrayDecl arr
+            let array_t = token "[" *> sep_by (token ",") expr <* token "]" in
+            let array_v = array_t >>| fun arr -> ArrayDecl arr in
+            (* --- Indexing --- *)
+            let index_p =
+              choice [var_cal; (string_v >>| fun s -> Literal s); array_v; parens expr]
+              >>= fun box ->
+              (token "[" *> expr <* token "]") >>| fun ind -> Indexing (box, ind)
             in
             (* --- Binops ---*)
             let factor =
@@ -67,7 +71,7 @@ let seq_of_expr =
             let asoc1_p = chainl1 asoc0_p asoc1 in
             let asoc2_p = chainl1 asoc1_p asoc2 in
             (* --- Expr definition --- *)
-            assn <|> asoc2_p <|> parens expr <|> while_loop <|> array_v)
+            choice [index_p; assn; asoc2_p; parens expr; while_loop; array_v])
       in
       maybe new_lines *> sep_by expr_separator expr <* maybe new_lines
       >>| fun s -> Seq s)

@@ -40,5 +40,9 @@ let rec eval (st : State.storage) (code : ast) : value * State.storage =
           ([], st) lst
       in
       (Array (List.rev values), new_st)
+  | Indexing (box, ind) ->
+      let b_v, n_st = eval st box in
+      let i_v, n_st = eval n_st ind in
+      (indexing b_v i_v, n_st)
 
 let run (code : ast) = fst (eval (State.create ()) code)

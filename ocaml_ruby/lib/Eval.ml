@@ -68,3 +68,6 @@ let%test "array equality" =
 
 let%test "variable assign to array" = test_eval "x = [1, 2]; x" "[1, 2]"
 let%test "using variables inside array" = test_eval "x = 10; y = [1, 2, x]; y" "[1, 2, 10]"
+
+let%test "indexing array" = test_eval "[1, 2, 3, 4][1]" "2"
+let%test "indexing variable" = test_eval "x = [1, 3, 4]; x[1]" "3"

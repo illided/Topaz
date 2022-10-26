@@ -4,7 +4,7 @@ let token_separator = take_while (fun x -> Char.equal x ' ')
 let as_token p = token_separator *> p <* token_separator
 
 let expr_separator =
-  take_while (fun x -> Char.equal x '\n' || Char.equal x ';')
+  take_while1 (fun x -> Char.equal x '\n' || Char.equal x ';')
   >>| (fun _ -> ";")
   |> as_token
 

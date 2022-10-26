@@ -78,11 +78,6 @@ let ls x y =
   | Some v1, Some v2 -> Bool (not (v1 || v2))
   | _ -> binop_typefail "<" x y
 
-let conditional (c : value) (t : ast) (e : ast) =
-  match c with
-  | Bool c -> if c then t else e
-  | _ -> typefail "Conditional expects bool as condition"
-
 let match_binop = function
   | "+" -> plus
   | "-" -> minus
@@ -97,3 +92,14 @@ let match_binop = function
   | "<=" -> ls_eq
   | "<" -> ls
   | op -> failwith ("Unknown binop " ^ op)
+
+let conditional (c : value) (t : ast) (e : ast) =
+  match c with
+  | Bool c -> if c then t else e
+  | _ -> typefail "Conditional expects bool as condition"
+
+let indexing (v : value) (ind : value) =
+  match (v, ind) with
+  | Array v, Integer i -> List.nth v i
+  | String v, Integer i -> String (String.get v i |> String.make 1)
+  | _ -> binop_typefail "index" v ind
