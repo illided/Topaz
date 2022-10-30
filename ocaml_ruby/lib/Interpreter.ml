@@ -3,6 +3,18 @@ open BuiltinOps
 open Environment
 
 let rec eval (st : State.storage) (code : ast) : value * State.storage =
+  let eval_function (p_names : string list) (body : ast) (p_values : value list)
+      : value =
+    let () =
+      if not (List.length p_names = List.length p_values) then
+        failwith "Wrong number of arguments."
+    in
+    let scope_state = State.create () in
+    let params = List.combine p_names p_values in
+    let step st (n, v) = State.set_variable st n v in
+    let initiated = List.fold_left step scope_state params in
+    fst (eval initiated body)
+  in
   match code with
   | Literal (lit_t, v) -> (value_of_literal lit_t v, st)
   | Var n -> (State.get_variable st n, st)
@@ -45,5 +57,21 @@ let rec eval (st : State.storage) (code : ast) : value * State.storage =
       let b_v, n_st = eval st box in
       let i_v, n_st = eval n_st ind in
       (indexing b_v i_v, n_st)
+  | FuncDeclaration (name, params, body) ->
+      ( Nil,
+        State.set_variable st name
+          (Function (name, params, eval_function params body)) )
+  | Invocation (box_inv, params) -> (
+      let left, n_st = eval st box_inv in
+      let params, n_st =
+        List.fold_left
+          (fun (acc, betw_exp_st) el ->
+            match eval betw_exp_st el with s_v, s_s -> (s_v :: acc, s_s))
+          ([], n_st) params
+      in
+      let params = List.rev params in
+      match left with
+      | Function (_, _, f) -> (f params, n_st)
+      | _ -> typefail "")
 
 let run (code : ast) = fst (eval (State.create ()) code)

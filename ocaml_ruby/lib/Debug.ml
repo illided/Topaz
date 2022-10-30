@@ -19,9 +19,13 @@ let tree_to_json (max_n : int) (t : ast) =
       | VarAssign (n, v) ->
           pairs_to_json [ ("Name", quoted n); ("Value", helper v (i + 1)) ]
           |> wrap_with_name "VarAssn"
-      | Binop (_, l, r) ->
+      | Binop (op, l, r) ->
           pairs_to_json
-            [ ("Left", helper l (i + 1)); ("Right", helper r (i + 1)) ]
+            [
+              ("Op", quoted op);
+              ("Left", helper l (i + 1));
+              ("Right", helper r (i + 1));
+            ]
           |> wrap_with_name "Binop"
       | Conditional (c, t, e) ->
           pairs_to_json
@@ -51,5 +55,22 @@ let tree_to_json (max_n : int) (t : ast) =
           pairs_to_json
             [ ("Box", helper box (i + 1)); ("Index", helper ind (i + 1)) ]
           |> wrap_with_name "Indexing"
+      | FuncDeclaration (name, params, body) ->
+          pairs_to_json
+            [
+              ("Name", quoted name);
+              ("Params", params |> List.map quoted |> list_to_json);
+              ("Body", helper body (i + 1));
+            ]
+          |> wrap_with_name "FuncDeclaration"
+      | Invocation (inv_box, params) ->
+          pairs_to_json
+            [
+              ("InvBox", helper inv_box (i + 1));
+              ( "Params",
+                params |> List.map (fun a -> helper a (i + 1)) |> list_to_json
+              );
+            ]
   in
+
   helper t 0

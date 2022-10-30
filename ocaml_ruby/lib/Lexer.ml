@@ -33,7 +33,9 @@ let asoc2_t =
 
 let binops = choice [ asoc0_t; asoc1_t; asoc2_t ]
 let is_letter = function 'a' .. 'z' -> true | 'A' .. 'Z' -> true | _ -> false
-let keywords = [ "if"; "then"; "else"; "end"; "true"; "false"; "while"; "do" ]
+
+let keywords =
+  [ "if"; "then"; "else"; "end"; "true"; "false"; "while"; "do"; "def" ]
 
 let identifier_t =
   take_while1 is_letter

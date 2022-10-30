@@ -75,3 +75,17 @@ let%test "indexing array" = test_eval "[1, 2, 3, 4][1]" "2"
 let%test "indexing variable" = test_eval "x = [1, 3, 4]; x[1]" "3"
 let%test "indexing string" = test_eval "\"Hello\"[2]" "l"
 let%test "indexing expression" = test_eval "([1, 2] + [3, 4])[2]" "3"
+let%test "one arg function" = test_eval "def f(x)\nx+1\nend; f(10)" "11"
+
+let%test "multiple args function" =
+  test_eval "def f(x, y)\nx - y\nend; f(10, 3)" "7"
+
+let%test "factorial" =
+  test_eval
+    "def f(i)\n\
+    \ x=1 \n\
+    \ while i > 0 \n\
+    \ x = x * i; i = i - 1 \n\
+    \ end \n\
+    \ x \n\
+    \ end; f(5)" "120"
