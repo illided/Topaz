@@ -59,19 +59,27 @@ let seq_of_expr =
             let array_v = array_t >>| fun arr -> ArrayDecl arr in
             (* --- Indexing --- *)
             let index_p =
-              choice [var_cal; (string_v >>| fun s -> Literal s); array_v; parens expr]
+              choice ~failure_msg:"Unrecognized index target"
+                [
+                  var_cal;
+                  (string_v >>| fun s -> Literal s);
+                  array_v;
+                  parens expr;
+                ]
               >>= fun box ->
-              (token "[" *> expr <* token "]") >>| fun ind -> Indexing (box, ind)
+              token "[" *> expr <* token "]" >>| fun ind -> Indexing (box, ind)
             in
             (* --- Binops ---*)
             let factor =
-              parens expr <|> literal <|> var_cal <|> conditional <|> array_v
+              choice ~failure_msg:"Unrecognized factor"
+                [ index_p; parens expr; literal; var_cal; conditional; array_v ]
             in
             let asoc0_p = chainl1 factor asoc0 in
             let asoc1_p = chainl1 asoc0_p asoc1 in
             let asoc2_p = chainl1 asoc1_p asoc2 in
             (* --- Expr definition --- *)
-            choice [index_p; assn; asoc2_p; parens expr; while_loop; array_v])
+            choice ~failure_msg:"Unrecognized expression"
+              [ assn; asoc2_p; parens expr; while_loop; array_v ])
       in
       maybe new_lines *> sep_by expr_separator expr <* maybe new_lines
       >>| fun s -> Seq s)
