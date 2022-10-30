@@ -1,15 +1,15 @@
 open Angstrom
 open Lexer
 open Types
-open BuiltinOps
 
-let integer_v = integer_t >>| fun i -> Integer (int_of_string i)
-let true_v = true_t *> return (Bool true)
-let false_v = false_t *> return (Bool false)
-let bool_v = true_v <|> false_v
-let string_v = ruby_string >>| fun s -> String s
-let literal = choice [ integer_v; bool_v; string_v ] >>| fun l -> Literal l
-let wr_binop p = p >>| fun op l r -> Binop (match_binop op, l, r)
+let bool_t = true_t <|> false_t
+
+let literal = choice [ 
+   integer_t >>| (fun s -> IntegerL, s); 
+   bool_t >>| (fun s -> BoolL, s);
+   ruby_string >>| (fun s -> StringL, s)
+] >>| fun (t,s) -> Literal (t, s)
+let wr_binop p = p >>| fun op l r -> Binop (op, l, r)
 let binop_v = wr_binop binops
 let asoc0 = wr_binop asoc0_t
 let asoc1 = wr_binop asoc1_t
@@ -47,7 +47,7 @@ let seq_of_expr =
                     <* maybe new_lines
                     >>= fun thenB ->
                     option
-                      (Conditional (condition, thenB, Literal Nil))
+                      (Conditional (condition, thenB, Literal (NilL,"Nil")))
                       ( string "else" *> maybe new_lines *> seq_of_expr
                       <* maybe new_lines
                       >>= fun elseB ->
@@ -62,7 +62,7 @@ let seq_of_expr =
               choice ~failure_msg:"Unrecognized index target"
                 [
                   var_cal;
-                  (string_v >>| fun s -> Literal s);
+                  (ruby_string >>| fun s -> Literal (StringL, s));
                   array_v;
                   parens expr;
                 ]

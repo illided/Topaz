@@ -4,16 +4,17 @@ open Environment
 
 let rec eval (st : State.storage) (code : ast) : value * State.storage =
   match code with
-  | Literal v -> (v, st)
+  | Literal (lit_t, v) -> (value_of_literal lit_t v, st)
   | Var n -> (State.get_variable st n, st)
   | VarAssign (i, v) ->
       let var_value, st = eval st v in
       let new_state = State.set_variable st i var_value in
       (var_value, new_state)
   | Binop (op, l, r) ->
+      let op_f = match_binop op in
       let l_v, st = eval st l in
       let r_v, st = eval st r in
-      (op l_v r_v, st)
+      (op_f l_v r_v, st)
   | Conditional (cond, thenB, elseB) ->
       let cond_v, st = eval st cond in
       eval st (conditional cond_v thenB elseB)

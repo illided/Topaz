@@ -14,7 +14,7 @@ let tree_to_json (max_n : int) (t : ast) =
     if i >= max_n then quoted "<DEPTH_LIMIT>"
     else
       match s_t with
-      | Literal v -> wrap_with_name "Literal" (quoted (string_of_value v))
+      | Literal (_, v) -> wrap_with_name "Literal" (quoted v)
       | Var n -> wrap_with_name "Variable" (quoted n)
       | VarAssign (n, v) ->
           pairs_to_json [ ("Name", quoted n); ("Value", helper v (i + 1)) ]
