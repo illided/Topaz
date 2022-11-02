@@ -1,6 +1,15 @@
 (library
  (wrapped false)
- (modules Types BuiltinOps Lexer Parser Interpreter Eval Environment Debug)
+ (modules
+  Types
+  BuiltinOps
+  Lexer
+  Parser
+  Interpreter
+  Eval
+  Environment
+  Debug
+  StdLib)
  (name ocaml_ruby)
  (libraries angstrom)
  (inline_tests)

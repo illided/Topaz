@@ -27,7 +27,7 @@ let asoc1_t = choice [ string "||"; string "+"; string "-" ] |> as_token
 let asoc2_t =
   choice
     [
-      string "=="; string "!="; string ">"; string "<"; string ">="; string "<=";
+      string "=="; string "!="; string ">="; string "<="; string ">"; string "<";
     ]
   |> as_token
 

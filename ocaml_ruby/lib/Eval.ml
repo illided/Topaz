@@ -18,6 +18,7 @@ let%test "simple string" = test_eval "\"hello\"" "hello"
 let%test "repeated string" = test_eval "\"hello\"*3" "hellohellohello"
 let%test "string comparison" = test_eval "\"hello\" == \"hello\"" "true"
 let%test "simple conditional" = test_eval "if true then 10 else 7 end" "10"
+let%test "conditional with binop" = test_eval "if 10 <= 7 then 1 else 2 end" "2"
 
 let%test "expr in condition" =
   test_eval "if 10 + 3 == 13 then 10 else 7 end" "10"

@@ -3,16 +3,20 @@ open BuiltinOps
 open Environment
 
 let rec eval (st : State.storage) (code : ast) : value * State.storage =
-  let eval_function (p_names : string list) (body : ast) (p_values : value list)
-      : value =
+  let rec eval_function (f_name : string) (p_names : string list) (body : ast)
+      (p_values : value list) : value =
     let () =
       if not (List.length p_names = List.length p_values) then
         failwith "Wrong number of arguments."
     in
-    let scope_state = State.create () in
+    let state = State.create () in
+    let state =
+      State.set_variable state f_name
+        (Function (f_name, p_names, eval_function f_name p_names body))
+    in
     let params = List.combine p_names p_values in
     let step st (n, v) = State.set_variable st n v in
-    let initiated = List.fold_left step scope_state params in
+    let initiated = List.fold_left step state params in
     fst (eval initiated body)
   in
   match code with
@@ -60,7 +64,7 @@ let rec eval (st : State.storage) (code : ast) : value * State.storage =
   | FuncDeclaration (name, params, body) ->
       ( Nil,
         State.set_variable st name
-          (Function (name, params, eval_function params body)) )
+          (Function (name, params, eval_function name params body)) )
   | Invocation (box_inv, params) -> (
       let left, n_st = eval st box_inv in
       let params, n_st =
