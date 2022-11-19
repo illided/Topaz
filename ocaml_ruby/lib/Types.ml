@@ -33,7 +33,7 @@ let rec string_of_value = function
   | String v -> v
   | Nil -> "nil"
   | Array l -> "[" ^ (List.map string_of_value l |> String.concat ", ") ^ "]"
-  | Function (name, _, _) -> name
+  | Function (name, params, _) -> name ^ "(" ^ String.concat ", " params ^ ")"
 
 let value_of_literal (lit_t : ruby_literal) (s : string) =
   match lit_t with

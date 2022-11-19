@@ -9,7 +9,7 @@ let rec eval (st : State.storage) (code : ast) : value * State.storage =
       if not (List.length p_names = List.length p_values) then
         failwith "Wrong number of arguments."
     in
-    let state = State.create () in
+    let state = State.add_state ~global:st ~local:State.create in
     let state =
       State.set_variable state f_name
         (Function (f_name, p_names, eval_function f_name p_names body))
@@ -78,4 +78,4 @@ let rec eval (st : State.storage) (code : ast) : value * State.storage =
       | Function (_, _, f) -> (f params, n_st)
       | _ -> typefail "")
 
-let run (code : ast) = fst (eval (State.create ()) code)
+let run (code : ast) = fst (eval (StdLib.initial_state) code)

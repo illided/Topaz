@@ -4,8 +4,6 @@ let read_whole_file filename =
   close_in ch;
   s
 
-let () =
+let _ =
   read_whole_file "example.rb"
   |> Eval.run_expr
-  |> (fun s -> "\nProgram result: " ^ s)
-  |> print_endline

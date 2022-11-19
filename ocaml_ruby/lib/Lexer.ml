@@ -34,13 +34,15 @@ let asoc2_t =
 let binops = choice [ asoc0_t; asoc1_t; asoc2_t ]
 let is_letter = function 'a' .. 'z' -> true | 'A' .. 'Z' -> true | _ -> false
 
+let is_letter_or_und c = is_letter c || c = '_' 
+
 let keywords =
   [ "if"; "then"; "else"; "end"; "true"; "false"; "while"; "do"; "def" ]
 
 let identifier_t =
-  take_while1 is_letter
+  take_while1 is_letter_or_und
   >>= (fun s1 ->
-        take_while (fun c -> is_letter c || is_digit c) >>| fun s2 -> s1 ^ s2)
+        take_while (fun c -> is_letter_or_und c || is_digit c) >>| fun s2 -> s1 ^ s2)
   |> as_token
   >>= fun i ->
   match List.find_opt (String.equal i) keywords with
